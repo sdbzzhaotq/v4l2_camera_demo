@@ -83,8 +83,6 @@ void enumerateControls();
 int v4l2GetControl(int control);
 int v4l2SetControl(unsigned int control_id, int value);
 
-int V4L2SetResolution(int new_width, int new_height);
-
 #ifdef  __cplusplus
 }
 #endif

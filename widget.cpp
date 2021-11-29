@@ -43,31 +43,11 @@ void Widget::InitWidget()
         imageprocessthread->init(ui->cb_camera_name->currentIndex());
         imageprocessthread->start();
 
-
-
-        //获取所有分辨率
-        ui->cb_resolution->clear();
-        int rescount = GetResolutinCount();
-        int curW = GetCurResWidth();
-        int curH = GetCurResHeight();
-        for(int i = 0; i < rescount; i++)
-        {
-            QString rW = QString::number(GetResolutionWidth(i));
-            QString rH = QString::number(GetResolutionHeight(i));
-            QString res = rW + "X" + rH;
-            ui->cb_resolution->addItem(res);
-            bool ok;
-            if(curW == rW.toInt(&ok, 10) && curH == rH.toInt(&ok, 10))
-                ui->cb_resolution->setCurrentIndex(i);
-        }
-
         enumerateControls();
     }
 
     connect(imageprocessthread, SIGNAL(SendMajorImageProcessing(QImage, int)),
             this, SLOT(ReceiveMajorImage(QImage, int)));
-
-    connect(ui->cb_resolution, SIGNAL(currentIndexChanged(QString)), this, SLOT(SetResolution()));
 }
 
 void Widget::ReceiveMajorImage(QImage image, int result)
@@ -115,19 +95,4 @@ void Widget::ReceiveMajorImage(QImage image, int result)
             break;
         }
     }
-}
-
-int Widget::SetResolution()
-{
-    int width, height;
-    QString res = ui->cb_resolution->currentText();
-    QStringList list = res.split("X");
-    width = list[0].toInt();
-    height = list[1].toInt();
-    printf("set resolution width = %d, height = %d\n",width, height);
-
-    mutexSetR.lock();
-    V4L2SetResolution(width, height);
-    mutexSetR.unlock();
-    return 0;
 }

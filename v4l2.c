@@ -369,18 +369,6 @@ int StopRun()
     return 0;
 }
 
-//切换分辨率
-int V4L2SetResolution(int new_width, int new_height)
-{
-    StopRun();
-    WIDTH = new_width;
-    HEIGHT = new_height;
-
-    StartRun(2);
-
-    return 0;
-}
-
 char *GetDevFmtDesc(int index)
 {
     memset(devFmtDesc, 0, sizeof(devFmtDesc));

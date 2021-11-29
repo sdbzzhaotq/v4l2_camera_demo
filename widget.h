@@ -19,7 +19,6 @@ public:
 
 private slots:
     void ReceiveMajorImage(QImage image, int result);
-    int SetResolution();
 private:
     Ui::Widget *ui;
 
