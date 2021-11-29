@@ -31,16 +31,12 @@ void Widget::InitWidget()
     setFixedSize(1000,600);
 
     int camcount = GetDeviceCount();
-
+    qDebug("count = %d\n", camcount);
     if(camcount > 0)
     {
-        //获取所有设备
-        for(int i = 0;i < camcount;i++)
-            ui->cb_camera_name->addItem(QString::fromLatin1(GetCameraName(i)));
-
         //启动默认视频
         StartRun(2);
-        imageprocessthread->init(ui->cb_camera_name->currentIndex());
+        imageprocessthread->init(0);//the index should be modify, zhaotq
         imageprocessthread->start();
 
         enumerateControls();
