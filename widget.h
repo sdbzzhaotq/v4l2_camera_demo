@@ -24,11 +24,6 @@ private slots:
     int SetFocusValue();
     int SetExposureMode();
     int SetExposureValue();
-    int SetSaturation();
-    int SetContrast();
-    int SetBrightness();
-    int SetHue();
-
 private:
     Ui::Widget *ui;
 

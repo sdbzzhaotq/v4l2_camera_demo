@@ -106,42 +106,6 @@ void Widget::InitWidget()
                 int exposureValue = v4l2GetControl(V4L2_SET_EXPOSURE);
                 ui->tE_exposure->setText(QString::number(exposureValue));
             }
-
-            //saturation
-            if(in_parameters[i].ctrl.id == V4L2_SET_SATURATION)
-            {
-                ui->hs_saturation->setMinimum(in_parameters[i].ctrl.minimum);
-                ui->hs_saturation->setMaximum(in_parameters[i].ctrl.maximum);
-                int saturationValue = v4l2GetControl(V4L2_SET_SATURATION);
-                ui->tE_saturation->setText(QString::number(saturationValue));
-            }
-
-            //contrast
-            if(in_parameters[i].ctrl.id == V4L2_SET_CONTRAST)
-            {
-                ui->hs_contrast->setMinimum(in_parameters[i].ctrl.minimum);
-                ui->hs_contrast->setMaximum(in_parameters[i].ctrl.maximum);
-                int contrastValue = v4l2GetControl(V4L2_SET_CONTRAST);
-                ui->tE_contrast->setText(QString::number(contrastValue));
-            }
-
-            //brightness
-            if(in_parameters[i].ctrl.id == V4L2_SET_BRIGHTNESS)
-            {
-                ui->hs_brightness->setMinimum(in_parameters[i].ctrl.minimum);
-                ui->hs_brightness->setMaximum(in_parameters[i].ctrl.maximum);
-                int brightnessValue = v4l2GetControl(V4L2_SET_BRIGHTNESS);
-                ui->tE_brightness->setText(QString::number(brightnessValue));
-            }
-
-            //hue
-            if(in_parameters[i].ctrl.id == V4L2_SET_HUE)
-            {
-                ui->hs_hue->setMinimum(in_parameters[i].ctrl.minimum);
-                ui->hs_hue->setMaximum(in_parameters[i].ctrl.maximum);
-                int hueValue = v4l2GetControl(V4L2_SET_HUE);
-                ui->tE_hue->setText(QString::number(hueValue));
-            }
         }
     }
 
@@ -155,12 +119,6 @@ void Widget::InitWidget()
 
     connect(ui->checkBox_exposure, SIGNAL(clicked()), this, SLOT(SetExposureMode()));
     connect(ui->hs_exposure, SIGNAL(valueChanged(int)), this, SLOT(SetExposureValue()));
-
-    connect(ui->hs_saturation, SIGNAL(valueChanged(int)), this, SLOT(SetSaturation()));
-    connect(ui->hs_contrast, SIGNAL(valueChanged(int)), this, SLOT(SetContrast()));
-    connect(ui->hs_brightness, SIGNAL(valueChanged(int)), this, SLOT(SetBrightness()));
-    connect(ui->hs_hue, SIGNAL(valueChanged(int)), this, SLOT(SetHue()));
-
 }
 
 void Widget::ReceiveMajorImage(QImage image, int result)
@@ -274,41 +232,5 @@ int Widget::SetExposureValue()
         ret = v4l2SetControl(V4L2_SET_EXPOSURE, value);
     }
 
-    return ret;
-}
-
-int Widget::SetSaturation()
-{
-    int ret = 0;
-    int value = ui->hs_saturation->value();
-    ui->tE_saturation->setText(QString::number(value));
-    ret = v4l2SetControl(V4L2_SET_SATURATION, value);
-    return ret;
-}
-
-int Widget::SetContrast()
-{
-    int ret;
-    int value = ui->hs_contrast->value();
-    ui->tE_contrast->setText(QString::number(value));
-    ret = v4l2SetControl(V4L2_SET_CONTRAST, value);
-    return ret = 0;
-}
-
-int Widget::SetBrightness()
-{
-    int ret = 0;
-    int value = ui->hs_brightness->value();
-    ui->tE_brightness->setText(QString::number(value));
-    ret = v4l2SetControl(V4L2_SET_BRIGHTNESS, value);
-    return ret;
-}
-
-int Widget::SetHue()
-{
-    int ret = 0;
-    int value = ui->hs_hue->value();
-    ui->tE_hue->setText(QString::number(value));
-    ret = v4l2SetControl(V4L2_SET_HUE, value);
     return ret;
 }
