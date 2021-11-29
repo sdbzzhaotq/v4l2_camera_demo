@@ -25,7 +25,6 @@ unsigned char *rgb24 = NULL;
 int WIDTH = 1280, HEIGHT = 720;
 
 //V4l2相关结构体
-static struct v4l2_capability cap;
 static struct v4l2_fmtdesc fmtdesc;
 static struct v4l2_frmsizeenum frmsizeenum;
 static struct v4l2_format format;
@@ -243,43 +242,20 @@ char *GetDeviceName(int index)
     int count = 0;
     char devname[15] = "";
     int i;
-    for(i = 0; i < 100; i++)
-    {
+    for(i = 0; i < 100; i++) {
         sprintf(devname, "%s%d", "/dev/video", i);
-        if(test_device_exist(devname) == 0)
-        {
+        if(test_device_exist(devname) == 0) {
             if(count == index)
                 break;
             count++;
-        }
-        else
+        } else {
             memset(devname, 0, sizeof(devname));
+        }
     }
 
     strcpy(devName, devname);
 
     return devName;
-}
-
-//根据索引获取摄像头名称
-char *GetCameraName(int index)
-{
-    if(videoIsRun > 0)
-        return "";
-
-    memset(camName, 0, sizeof(camName));
-
-    char devname[15] = "";
-    strcpy(devname, GetDeviceName(index));
-
-    int fd = open(devname, O_RDWR);
-    if(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1)
-    {
-        strcpy(camName, (char *)cap.card);
-    }
-    close(fd);
-
-    return camName;
 }
 
 //运行指定索引的视频
@@ -301,13 +277,25 @@ int StartRun(int index)
     strcpy(runningDev, devname);
     videoIsRun = 1;
 
+    //debug
+    struct v4l2_capability cap;
+    int ret = ioctl(fd,VIDIOC_QUERYCAP,&cap);
+    if( ret < 0 ) {
+        printf("VIDIOC_QUERYCAP error\n");
+    }
+
+    if(V4L2_CAP_META_CAPTURE & cap.device_caps) {
+        fprintf(stderr,"Not Video Capture\n");
+    }
+    else {
+        fprintf(stderr,"Video Capture\n");
+    }
+
     return 0;
 }
 
-int GetFrame()
-{
-    if(videoIsRun > 0)
-    {
+int GetFrame() {
+    if(videoIsRun > 0) {
         fd_set fds;
         struct timeval tv;
         int r;
@@ -315,35 +303,27 @@ int GetFrame()
         FD_ZERO (&fds);
         FD_SET (fd, &fds);
 
-
         tv.tv_sec = 7;
         tv.tv_usec = 0;
 
         r = select (fd + 1, &fds, NULL, NULL, &tv);
-
-        if (0 == r)
-            return -1;
-        else if(-1 == r)
-            return errno;
+        if (0 == r) { return -1; }
+        else if(-1 == r) { return errno;}
 
         memset(&buffer, 0, sizeof(buffer));
         buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         buffer.memory = V4L2_MEMORY_MMAP;
 
         if (ioctl(fd, VIDIOC_DQBUF, &buffer) == -1) {
-            perror("GetFrame VIDIOC_DQBUF Failed");
+            //perror("GetFrame VIDIOC_DQBUF Failed");//tdodo
             return errno;
-        }
-
-        else
-        {
+        } else {
             //convert_yuv_to_rgb_buffer((unsigned char*)buffers[buffer.index].start, rgb24, WIDTH, HEIGHT);
             MJPEG2RGB((unsigned char*)buffers[buffer.index].start, rgb24, buffer.bytesused);
             if (ioctl(fd, VIDIOC_QBUF, &buffer) < 0) {
-                perror("GetFrame VIDIOC_QBUF Failed");
+                //perror("GetFrame VIDIOC_QBUF Failed");//todo
                 return errno;
             }
-
             return 0;
         }
     }
@@ -354,8 +334,7 @@ int GetFrame()
 int StopRun()
 {
     printf("stop run\n");
-    if(videoIsRun > 0)
-    {
+    if(videoIsRun > 0) {
         EndVideoStream();
         EndVideoStreamClear();
     }
@@ -363,8 +342,7 @@ int StopRun()
     videoIsRun = -1;
     deviceIsOpen = -1;
 
-    if(close(fd) != 0)
-        return -1;
+    if(close(fd) != 0) { return -1; }
 
     return 0;
 }
@@ -373,11 +351,10 @@ char *GetDevFmtDesc(int index)
 {
     memset(devFmtDesc, 0, sizeof(devFmtDesc));
 
-    fmtdesc.index=index;
-    fmtdesc.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    fmtdesc.index = index;
+    fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-    if(ioctl(fd, VIDIOC_ENUM_FMT, &fmtdesc) != -1)
-    {
+    if(ioctl(fd, VIDIOC_ENUM_FMT, &fmtdesc) != -1) {
         char fmt[5] = "";
         sprintf(fmt, "%c%c%c%c",
                 (__u8)(fmtdesc.pixelformat&0XFF),
@@ -428,8 +405,7 @@ int GetDevFmtSize()
 int GetDevFmtBytesLine()
 {
     format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    if(ioctl (fd, VIDIOC_G_FMT, &format) == -1)
-    {
+    if(ioctl (fd, VIDIOC_G_FMT, &format) == -1) {
         perror("GetDevFmtBytesLine:");
         return -1;
     }
@@ -437,8 +413,7 @@ int GetDevFmtBytesLine()
 }
 
 //设备分辨率相关
-int GetResolutinCount()
-{
+int GetResolutinCount() {
     fmtdesc.index = 0;
     fmtdesc.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
@@ -456,8 +431,7 @@ int GetResolutinCount()
     return i;
 }
 
-int GetResolutionWidth(int index)
-{
+int GetResolutionWidth(int index) {
     fmtdesc.index = 0;
     fmtdesc.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
@@ -473,8 +447,7 @@ int GetResolutionWidth(int index)
         return -1;
 }
 
-int GetResolutionHeight(int index)
-{
+int GetResolutionHeight(int index) {
     fmtdesc.index = 0;
     fmtdesc.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
 

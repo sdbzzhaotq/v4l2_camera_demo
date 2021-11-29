@@ -26,22 +26,16 @@ void MajorImageProcessingThread::init(int index)
 
 void MajorImageProcessingThread::run()
 {
-    if(majorindex != -1)
-    {
+    if(majorindex != -1) {
         start_time = getTimeUsec();
-        while(!stopped)
-        {
-            //msleep(5);
-
+        while(!stopped) {
             QImage img;
             mutexSetR.lock();
             int ret = GetFrame();
             mutexSetR.unlock();
-            if(ret == 0)
-            {
+            if(ret == 0) {
                 frame_count +=1;
-                if(frame_count == 30)
-                {
+                if(frame_count == 30) {
                     frame_count =0;
                     //qDebug("fps is: %.4f fps\n", 30.0 / ((getTimeUsec() - start_time) * 1.0 / 1000000));
                     start_time = getTimeUsec();

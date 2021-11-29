@@ -28,15 +28,14 @@ void Widget::InitWidget()
     imageprocessthread = new MajorImageProcessingThread;
 
     setWindowTitle("camera demo");
-    setFixedSize(1000,600);
+    setFixedSize(1280,720);
 
     int camcount = GetDeviceCount();
-    qDebug("count = %d\n", camcount);
-    if(camcount > 0)
+    if(camcount > 1)
     {
         //启动默认视频
-        StartRun(2);
-        imageprocessthread->init(0);//the index should be modify, zhaotq
+        StartRun(0);
+        imageprocessthread->init(0);
         imageprocessthread->start();
 
         enumerateControls();
@@ -50,8 +49,7 @@ void Widget::ReceiveMajorImage(QImage image, int result)
 {
     //超时后关闭视频
     //超时代表着VIDIOC_DQBUF会阻塞，直接关闭视频即可
-    if(result == -1)
-    {
+    if(result == -1) {
         imageprocessthread->stop();
         imageprocessthread->wait();
         StopRun();
@@ -60,8 +58,7 @@ void Widget::ReceiveMajorImage(QImage image, int result)
         ui->image_label->setText("获取设备图像超时！");
     }
 
-    if(!image.isNull())
-    {
+    if(!image.isNull()) {
         ui->image_label->clear();
         switch(result)
         {
