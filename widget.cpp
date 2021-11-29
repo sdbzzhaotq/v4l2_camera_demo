@@ -62,63 +62,12 @@ void Widget::InitWidget()
         }
 
         enumerateControls();
-
-        for(int i =0;i < parametercount; i++)
-        {
-            if(in_parameters[i].ctrl.id == V4L2_SET_FOCUS_MODE)
-            {
-                int focusMode = v4l2GetControl(V4L2_SET_FOCUS_MODE);
-                Qt::CheckState focusState = focusMode == 0 ? Qt::Unchecked : Qt::Checked;
-                ui->checkBox_focus->setCheckState(focusState);
-                ui->hs_focus->setDisabled(focusMode);
-
-            }
-
-            if(in_parameters[i].ctrl.id == V4L2_SET_FOCUS)
-            {
-                ui->hs_focus->setMinimum(in_parameters[i].ctrl.minimum);
-                ui->hs_focus->setMaximum(in_parameters[i].ctrl.maximum);
-                int focusValue = v4l2GetControl(V4L2_SET_FOCUS);
-                ui->tE_focus->setText(QString::number(focusValue));
-            }
-
-            if(in_parameters[i].ctrl.id == V4L2_SET_EXPOSURE_MODE)
-            {
-                int exposureMode = v4l2GetControl(V4L2_SET_EXPOSURE_MODE);
-                qDebug("exposure mode = %d\n",exposureMode);
-                Qt::CheckState ExposureState = exposureMode == 1 ? Qt::Unchecked : Qt::Checked;
-                ui->checkBox_exposure->setCheckState(ExposureState);
-                if(exposureMode == 1)
-                {
-                   ui->hs_exposure->setDisabled(false);
-                }
-                else
-                {
-                    ui->hs_exposure->setDisabled(true);
-                }
-
-            }
-
-            if(in_parameters[i].ctrl.id == V4L2_SET_EXPOSURE)
-            {
-                ui->hs_exposure->setMinimum(in_parameters[i].ctrl.minimum);
-                ui->hs_exposure->setMaximum(in_parameters[i].ctrl.maximum);
-                int exposureValue = v4l2GetControl(V4L2_SET_EXPOSURE);
-                ui->tE_exposure->setText(QString::number(exposureValue));
-            }
-        }
     }
 
     connect(imageprocessthread, SIGNAL(SendMajorImageProcessing(QImage, int)),
             this, SLOT(ReceiveMajorImage(QImage, int)));
 
     connect(ui->cb_resolution, SIGNAL(currentIndexChanged(QString)), this, SLOT(SetResolution()));
-
-    connect(ui->checkBox_focus, SIGNAL(clicked()), this, SLOT(SetFocusMode()));
-    connect(ui->hs_focus, SIGNAL(valueChanged(int)), this, SLOT(SetFocusValue()));
-
-    connect(ui->checkBox_exposure, SIGNAL(clicked()), this, SLOT(SetExposureMode()));
-    connect(ui->hs_exposure, SIGNAL(valueChanged(int)), this, SLOT(SetExposureValue()));
 }
 
 void Widget::ReceiveMajorImage(QImage image, int result)
@@ -181,56 +130,4 @@ int Widget::SetResolution()
     V4L2SetResolution(width, height);
     mutexSetR.unlock();
     return 0;
-}
-
-int Widget::SetFocusMode()
-{
-    int focusMode = ui->checkBox_focus->isChecked() ? 1 : 0;
-    v4l2SetControl(V4L2_SET_FOCUS_MODE, focusMode);
-    ui->hs_focus->setDisabled(focusMode);
-
-    return 0;
-}
-
-int Widget::SetFocusValue()
-{
-    int focusMode = ui->checkBox_focus->isChecked() ? 1 : 0;
-    if(focusMode == 0)
-    {
-        int value = ui->hs_focus->value();
-        ui->tE_focus->setText(QString::number(value));
-        v4l2SetControl(V4L2_SET_FOCUS, value);
-    }
-
-    return 0;
-}
-
-int Widget::SetExposureMode()
-{
-    int exposureMode = ui->checkBox_exposure->isChecked() ? 3 : 1;
-    v4l2SetControl(V4L2_SET_EXPOSURE_MODE, exposureMode);
-    if(exposureMode == 1)
-    {
-       ui->hs_exposure->setDisabled(false);
-    }
-    else
-    {
-        ui->hs_exposure->setDisabled(true);
-    }
-
-    return 0;
-}
-
-int Widget::SetExposureValue()
-{
-    int ret = 0;
-    int exposureMode = ui->checkBox_exposure->isChecked() ? 3 : 1;
-    if(exposureMode == 1)
-    {
-        int value = ui->hs_exposure->value();
-        ui->tE_exposure->setText(QString::number(value));
-        ret = v4l2SetControl(V4L2_SET_EXPOSURE, value);
-    }
-
-    return ret;
 }

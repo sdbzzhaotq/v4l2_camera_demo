@@ -20,10 +20,6 @@ public:
 private slots:
     void ReceiveMajorImage(QImage image, int result);
     int SetResolution();
-    int SetFocusMode();
-    int SetFocusValue();
-    int SetExposureMode();
-    int SetExposureValue();
 private:
     Ui::Widget *ui;
 
