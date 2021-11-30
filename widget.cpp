@@ -33,12 +33,9 @@ void Widget::InitWidget()
     int camcount = GetDeviceCount();
     if(camcount > 1)
     {
-        //启动默认视频
-        StartRun(0);
+        StartRun(0);//启动默认视频
         imageprocessthread->init(0);
         imageprocessthread->start();
-
-        enumerateControls();
     }
 
     connect(imageprocessthread, SIGNAL(SendMajorImageProcessing(QImage, int)),

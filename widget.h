@@ -21,13 +21,8 @@ private slots:
     void ReceiveMajorImage(QImage image, int result);
 private:
     Ui::Widget *ui;
-
     int err11, err19;
-
     MajorImageProcessingThread *imageprocessthread;
-
     void InitWidget();
-
-
 };
 #endif // WIDGET_H

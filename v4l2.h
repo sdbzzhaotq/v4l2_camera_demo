@@ -51,20 +51,8 @@ int StartRun(int index);
 int GetFrame();
 int StopRun();
 
-int GetDevFmtWidth();
-int GetDevFmtHeight();
-int GetDevFmtSize();
-int GetDevFmtBytesLine();
-
-int GetResolutinCount();
-int GetResolutionWidth(int index);
-int GetResolutionHeight(int index);
 int GetCurResWidth();
 int GetCurResHeight();
-
-void enumerateControls();
-int v4l2GetControl(int control);
-int v4l2SetControl(unsigned int control_id, int value);
 
 #ifdef  __cplusplus
 }
